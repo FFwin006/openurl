@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多功能工具合集</title>
+<link rel="icon" href="icon.png" type="image/png" sizes="32x32">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            flex: 1;
+        }
+        .tool-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tool-button {
+            padding: 8px 2px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background-color 0.3s;
+            min-width: 120px;
+        }
+        .tool-button:hover {
+            background-color: #2980b9;
+        }
+        .tool-button.active {
+            background-color: #2c3e50;
+        }
+        .tool-section {
+            display: none;
+        }
+        .tool-section.active {
+            display: block;
+        }
+
+        /* IP检测工具样式 */
+        .ip-form {
+            display: flex;
+            margin-bottom: 25px;
+        }
+        .ip-form input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .ip-form button {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .ip-form button:hover {
+            background-color: #2980b9;
+        }
+        .info-section {
+            margin-bottom: 30px;
+        }
+        .info-section h2 {
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 25px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .info-value {
+            color: #333;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            padding: 15px;
+            background: #fdecea;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .map-container {
+            height: 300px;
+            background-color: #eee;
+            border-radius: 4px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        .current-ip-note {
+            font-size: 14px;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        /* 批量打开网址工具样式 */
+        #urls {
+            width: 100%;
+            height: 350px;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .url-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            min-width: 120px;
+        }
+        #clear {
+            background-color: #f44336;
+        }
+        #check-urls {
+            background-color: #FFA500;
+        }
+        .url-button:hover {
+            opacity: 0.9;
+        }
+        .instructions {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-size:14px;
+        }
+        .url-results {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            display: none;
+        }
+        .url-result-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .url-result-item:last-child {
+            border-bottom: none;
+        }
+        .url-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .url-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .url-link {
+            color: #0066cc;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .url-link:hover {
+            text-decoration: underline;
+        }
+        .url-time {
+            font-size: 12px;
+            color: #666;
+        }
+        .url-speed {
+            font-style: italic;
+            color: #666;
+            text-align: right;
+            min-width: 120px;
+        }
+
+        /* 网址检测打开工具样式 */
+        #url-test-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        #url-test-progress {
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        #url-test-progress-bar {
+            height: 30px;
+            background-color: #4CAF50;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        #url-test-frame-container {
+            width: 100%;
+            height:900px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        #url-test-frame-header {
+            background-color: #f5f5f5;
+            padding: 8px 15px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #url-test-frame {
+            width: 100%;
+            height: 600px;
+            border: none;
+            padding: 8px 15px;
+        }
+        #url-test-status {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        #url-test-count {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .error-message {
+            color: #e74c3c;
+            margin: 10px 0;
+        }
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .control-button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .reload-button {
+            background-color: #3498db;
+            color: white;
+        }
+        .next-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+        #url-test-history {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            display: none;
+        }
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .view-history-button {
+            background-color: #9c27b0;
+            color: white;
+            margin-top: 10px;
+        }
+        .history-url {
+            color: #0066cc;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .history-url:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            .url-result-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .url-speed {
+                text-align: left;
+                width: 100%;
+            }
+            #url-test-frame-container {
+                height: 98%;
+            }
+        }
+
+        /* 中等屏幕设备（平板，769px到992px） */
+        @media (min-width: 769px) and (max-width: 992px) {
+            .container {
+                max-width: 750px;
+            }
+        }
+
+        /* 大屏幕设备（桌面，993px及以上） */
+        @media (min-width: 993px) {
+            .container {
+                max-width: 1200px;
+            }
+        }
+
+        /* 页脚样式 */
+        footer {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+          .readme {
+            margin-bottom: 20px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+        }
+         .readme:hover {
+            text-decoration: underline;
+        }
+         .tip-box {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 0 4px 4px 0;
+            font-size: 14px;
+        }
+        
+        .tip-box strong {
+            color: #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tool-buttons">
+            <button class="tool-button active" data-tool="url-tool">批量打开网址</button>
+            <button class="tool-button" data-tool="url-test-tool">自动打开网址</button>
+            <button class="tool-button" data-tool="ip-tool">IP地址检测</button>
+        </div>
+        
+        <!-- 批量打开网址工具 -->
+        <div id="url-tool" class="tool-section active">
+            <textarea id="urls" placeholder="请在此处粘贴多个网址，每行一个网址...
+例如：
+https://www.baidu.com
+https://www.google.com
+https://www.github.com
+
+批量打开超过30个网址，检测无限制
+"></textarea>
+            
+            <div class="button-container">
+                <button id="openAll" class="url-button">批量打开</button>
+                <button id="check-urls" class="url-button">检测网址</button>
+                <button id="clear" class="url-button">清空</button>
+            </div>
+            
+            <div class="url-results" id="url-results">
+                <h3>网址检测结果：</h3>
+                <div id="url-results-container"></div>
+            </div>
+            
+            <div class="instructions">
+                <h3>使用说明：</h3>
+                <ol>
+                    <li>在文本框中粘贴多个网址（每行一个网址）</li>
+                    <li>最多支持30个网址</li>
+                    <li>点击"批量打开"按钮</li>
+                    <li>浏览器会逐个打开这些网址（可能会弹出弹窗警告）</li>
+                    <li>请允许弹出窗口以正常使用</li>
+                </ol>
+            </div>
+        </div>
+        
+        <!-- IP地址检测工具 -->
+        <div id="ip-tool" class="tool-section">
+            <div class="ip-form">
+                <input type="text" id="ip-input" placeholder="输入IPv4或IPv6地址 (默认显示本机IP)">
+                <button id="search-btn">检测IP</button>
+            </div>
+            <div class="current-ip-note">留空并点击按钮将检测本机IP</div>
+            
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>正在查询IP信息...</p>
+            </div>
+            
+            <div class="error"></div>
+            
+            <div id="result-container">
+                <div class="info-section">
+                    <h2>IP地址信息</h2>
+                    <div class="info-grid">
+                        <div class="info-label">IP地址类型:</div>
+                        <div class="info-value" id="ip-type">-</div>
+                        <div class="info-label">IP地址:</div>
+                        <div class="info-value" id="ip-address">-</div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h2>地理位置信息</h2>
+                    <div class="info-grid">
+                        <div class="info-label">国家/地区:</div>
+                        <div class="info-value" id="country">-</div>
+                        <div class="info-label">省份/州:</div>
+                        <div class="info-value" id="region">-</div>
+                        <div class="info-label">城市:</div>
+                        <div class="info-value" id="city">-</div>
+                        <div class="info-label">ISP提供商:</div>
+                        <div class="info-value" id="isp">-</div>
+                    </div>
+                    
+                    <div class="map-container">
+                        <div id="map"></div>
+                    </div>
+                     <div class="tip-box">
+            <strong>提示：</strong> 当前使用的免费IPAPI地理位置服务可能存在精度限制，(省份/城市）显示的位置信息可能不够准确。
+       <p>建议:使用检测到的ip到专业定位服务获取更精确的位置信息：</p>
+    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 网址检测打开工具 -->
+        <div id="url-test-tool" class="tool-section">
+            <textarea id="url-test-input" placeholder="请在此处粘贴多个网址，每行一个网址...
+例如：
+https://www.baidu.com
+https://www.google.com
+https://www.github.com
+
+支持最多 300 个网址
+" style="width: 100%; height: 150px; margin-bottom: 15px;"></textarea>
+
+            <div class="button-container">
+                <button id="url-test-start" class="url-button" style="background-color: #9c27b0;">开始检测</button>
+                <button id="url-test-stop" class="url-button" style="background-color: #f44336;">停止</button>
+                <button id="url-test-clear" class="url-button">清空</button>
+            </div>
+
+            <div id="url-test-progress-container" style="display: none;">
+                <h3>检测进度：</h3>
+                <div id="url-test-progress">
+                    <div id="url-test-progress-bar">0%</div>
+                </div>
+                <div id="url-test-count">准备开始检测...</div>
+            </div>
+
+            <div id="url-test-frame-container" style="display: none;">
+                <div id="url-test-frame-header">
+                    <span id="url-test-current-url">等待开始...</span>
+                    <span id="url-test-status" class="status-pending">等待中</span>
+                </div>
+                <div id="url-test-error" class="error-message" style="display: none;"></div>
+                <div id="url-test-controls" class="test-controls" style="display: none;">
+                    <button id="url-test-reload" class="control-button reload-button">重新加载</button>
+                    <button id="url-test-next" class="control-button next-button">下一个网址</button>
+                </div>
+                <iframe id="url-test-frame"></iframe>
+            </div>
+
+            <div id="url-test-history" style="display: none;">
+                <h3>检测历史记录</h3>
+                <div id="url-test-history-content"></div>
+                <button id="url-test-close-history" class="control-button view-history-button" style="margin-top: 10px;">关闭历史记录</button>
+            </div>
+
+            <button id="url-test-view-history" class="control-button view-history-button" style="display: none; margin-top: 10px;">查看检测历史</button>
+
+            <div class="instructions">
+                <h3>使用说明：</h3>
+                <ol>
+                    <li>在文本框中粘贴多个网址（每行一个网址）</li>
+                    <li>支持最多300个网址</li>
+                    <li>点击"开始检测"按钮</li>
+                    <li>系统将逐个打开网址，每个网址显示10秒</li>
+                    <li>可以随时停止检测</li>
+                    <li>检测完成后可以查看历史记录</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 多功能工具 || 内部测试使用</p>
+        <p> 点击查看功能说明<a class="readme" href="readme.html">&nbsp; 👉&nbsp;总结说明</a></p>
+    </footer>
+
+    <script>
+        // 工具切换功能
+        document.querySelectorAll('.tool-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // 更新按钮状态
+                document.querySelectorAll('.tool-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // 显示对应的工具
+                const toolId = this.getAttribute('data-tool');
+                document.querySelectorAll('.tool-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(toolId).classList.add('active');
+            });
+        });
+
+        // IP检测工具功能
+        // 显示加载状态
+        function showLoading() {
+            document.querySelector('.loading').style.display = 'block';
+            document.querySelector('.error').style.display = 'none';
+        }
+
+        // 隐藏加载状态
+        function hideLoading() {
+            document.querySelector('.loading').style.display = 'none';
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            const errorEl = document.querySelector('.error');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        // 清空结果
+        function clearResults() {
+            document.getElementById('ip-type').textContent = '-';
+            document.getElementById('ip-address').textContent = '-';
+            document.getElementById('country').textContent = '-';
+            document.getElementById('region').textContent = '-';
+            document.getElementById('city').textContent = '-';
+            document.getElementById('isp').textContent = '-';
+            document.querySelector('.map-container').innerHTML = '<div id="map"></div>';
+        }
+
+        // 显示IP信息
+        function displayIPInfo(data) {
+            document.getElementById('ip-type').textContent = isIPv6(data.query) ? 'IPv6' : 'IPv4';
+            document.getElementById('ip-address').textContent = data.query;
+            document.getElementById('country').textContent = `${data.country || '-'} ${data.countryCode ? '('+data.countryCode+')' : ''}`;
+            document.getElementById('region').textContent = `${data.regionName || '-'} ${data.region ? '('+data.region+')' : ''}`;
+            document.getElementById('city').textContent = data.city || '-';
+            document.getElementById('isp').textContent = data.isp || '-';
+            
+            // 显示地图
+            if (data.lat && data.lon) {
+                initMap(data.lat, data.lon);
+            } else {
+                document.querySelector('.map-container').innerHTML = '<p style="text-align:center;padding:20px;">无法获取地理位置</p>';
+            }
+        }
+
+        // 初始化地图
+        function initMap(lat, lon) {
+            const mapContainer = document.getElementById('map');
+            mapContainer.innerHTML = `
+                <iframe 
+                    width="100%" 
+                    height="100%" 
+                    frameborder="0" 
+                    scrolling="no" 
+                    marginheight="0" 
+                    marginwidth="0" 
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=${lon-0.1}%2C${lat-0.1}%2C${lon+0.1}%2C${lat+0.1}&amp;layer=mapnik&amp;marker=${lat}%2C${lon}" 
+                    style="border: 1px solid black">
+                </iframe>
+                <br/>
+                <small>
+                    <a href="https://www.openstreetmap.org/?mlat=${lat}&amp;mlon=${lon}#map=10/${lat}/${lon}" target="_blank">
+                        查看大图
+                    </a>
+                </small>
+            `;
+        }
+
+        // 检查是否是IPv6地址
+        function isIPv6(ip) {
+            return ip.includes(':');
+        }
+
+        // 获取用户当前IP信息 - 优化版本
+        function getCurrentIPInfo() {
+            showLoading();
+            clearResults();
+            
+            // 尝试多个API，按优先级排序
+            const apiEndpoints = [
+                'https://ipapi.co/json/',
+                'https://ipinfo.io/json?token=8a0a475a5a0b4c',
+                'https://api.ipgeolocation.io/ipgeo?apiKey=72a4b4b6b2a84f0e8e8f8c8f8c8f8c8f',
+                'https://ipwho.is/'
+            ];
+            
+            let currentApiIndex = 0;
+            
+            function tryNextApi() {
+                if (currentApiIndex >= apiEndpoints.length) {
+                    showError('所有IP API服务均不可用，请稍后再试');
+                    hideLoading();
+                    return;
+                }
+                
+                const apiUrl = apiEndpoints[currentApiIndex];
+                currentApiIndex++;
+                
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) throw new Error('网络响应不正常');
+                        return response.json();
+                    })
+                    .then(data => {
+                        // 不同API返回的数据结构不同，需要统一处理
+                        let ipInfo = {};
+                        
+                        if (apiUrl.includes('ipapi.co')) {
+                            ipInfo = {
+                                query: data.ip,
+                                country: data.country_name,
+                                countryCode: data.country_code,
+                                region: data.region_code,
+                                regionName: data.region,
+                                city: data.city,
+                                isp: data.org,
+                                lat: data.latitude,
+                                lon: data.longitude
+                            };
+                        } else if (apiUrl.includes('ipinfo.io')) {
+                            const loc = data.loc ? data.loc.split(',') : [];
+                            ipInfo = {
+                                query: data.ip,
+                                country: data.country,
+                                countryCode: data.country,
+                                region: data.region,
+                                regionName: data.region,
+                                city: data.city,
+                                isp: data.org,
+                                lat: loc[0],
+                                lon: loc[1]
+                            };
+                        } else if (apiUrl.includes('ipgeolocation.io')) {
+                            ipInfo = {
+                                query: data.ip,
+                                country: data.country_name,
+                                countryCode: data.country_code2,
+                                region: data.state_prov,
+                                regionName: data.state_prov,
+                                city: data.city,
+                                isp: data.isp,
+                                lat: data.latitude,
+                                lon: data.longitude
+                            };
+                        } else if (apiUrl.includes('ipwho.is')) {
+                            ipInfo = {
+                                query: data.ip,
+                                country: data.country,
+                                countryCode: data.country_code,
+                                region: data.region_code,
+                                regionName: data.region,
+                                city: data.city,
+                                isp: data.connection.isp,
+                                lat: data.latitude,
+                                lon: data.longitude
+                            };
+                        }
+                        
+                        // 填入输入框
+                        document.getElementById('ip-input').value = ipInfo.query;
+                        displayIPInfo(ipInfo);
+                        hideLoading();
+                    })
+                    .catch(error => {
+                        // 尝试下一个API
+                        tryNextApi();
+                    });
+            }
+            
+            // 开始尝试第一个API
+            tryNextApi();
+        }
+
+        // 查询IP信息 - 优化版本
+        function queryIPInfo(ip) {
+            showLoading();
+            clearResults();
+            
+            // 验证IP格式
+            if (!isValidIP(ip)) {
+                showError('请输入有效的IPv4或IPv6地址');
+                hideLoading();
+                return;
+            }
+            
+            // 使用多个API端点，按优先级排序
+            const apiEndpoints = [
+                `https://ipapi.co/${ip}/json/`,
+                `https://ipinfo.io/${ip}?token=8a0a475a5a0b4c`,
+                `https://api.ipgeolocation.io/ipgeo?apiKey=72a4b4b6b2a84f0e8e8f8c8f8c8f8c8f&ip=${ip}`,
+                `https://ipwho.is/${ip}`
+            ];
+            
+            let currentApiIndex = 0;
+            
+            function tryNextApi() {
+                if (currentApiIndex >= apiEndpoints.length) {
+                    showError('所有IP API服务均不可用，请稍后再试');
+                    hideLoading();
+                    return;
+                }
+                
+                const apiUrl = apiEndpoints[currentApiIndex];
+                currentApiIndex++;
+                
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) throw new Error('API请求失败');
+                        return response.json();
+                    })
+                    .then(data => {
+                        // 检查API返回的错误
+                        if (data.error || (data.success !== undefined && !data.success)) {
+                            throw new Error(data.reason || 'IP查询失败');
+                        }
+                        
+                        // 不同API返回的数据结构不同，需要统一处理
+                        let ipInfo = {};
+                        
+                        if (apiUrl.includes('ipapi.co')) {
+                            ipInfo = {
+                                query: data.ip,
+                                country: data.country_name,
+                                countryCode: data.country_code,
+                                region: data.region_code,
+                                regionName: data.region,
+                                city: data.city,
+                                isp: data.org,
+                                lat: data.latitude,
+                                lon: data.longitude
+                            };
+                        } else if (apiUrl.includes('ipinfo.io')) {
+                            const loc = data.loc ? data.loc.split(',') : [];
+                            ipInfo = {
+                                query: data.ip,
+                                country: data.country,
+                                countryCode: data.country,
+                                region: data.region,
+                                regionName: data.region,
+                                city: data.city,
+                                isp: data.org,
+                                lat: loc[0],
+                                lon: loc[1]
+                            };
+                        } else if (apiUrl.includes('ipgeolocation.io')) {
+                            ipInfo = {
+                                query: data.ip,
+                                country: data.country_name,
+                                countryCode: data.country_code2,
+                                region: data.state_prov,
+                                regionName: data.state_prov,
+                                city: data.city,
+                                isp: data.isp,
+                                lat: data.latitude,
+                                lon: data.longitude
+                            };
+                        } else if (apiUrl.includes('ipwho.is')) {
+                            ipInfo = {
+                                query: data.ip,
+                                country: data.country,
+                                countryCode: data.country_code,
+                                region: data.region_code,
+                                regionName: data.region,
+                                city: data.city,
+                                isp: data.connection.isp,
+                                lat: data.latitude,
+                                lon: data.longitude
+                            };
+                        }
+                        
+                        displayIPInfo(ipInfo);
+                        hideLoading();
+                    })
+                    .catch(error => {
+                        // 尝试下一个API
+                        tryNextApi();
+                    });
+            }
+            
+            // 开始尝试第一个API
+            tryNextApi();
+        }
+
+        // 验证IP地址格式
+        function isValidIP(ip) {
+            // IPv4正则
+            const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            
+            // IPv6正则 (简化版)
+            const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+            const ipv6ShortRegex = /^(([0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4})?::(([0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4})?$/;
+            
+            return ipv4Regex.test(ip) || ipv6Regex.test(ip) || ipv6ShortRegex.test(ip);
+        }
+
+        // 格式化时间为 YYYY-MM-DD HH:MM:SS
+        function formatDateTime(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 绑定IP检测按钮
+            document.getElementById('search-btn').addEventListener('click', function() {
+                const ip = document.getElementById('ip-input').value.trim();
+                if (ip) {
+                    queryIPInfo(ip);
+                } else {
+                    getCurrentIPInfo();
+                }
+            });
+            
+            // IP输入框回车事件
+            document.getElementById('ip-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('search-btn').click();
+                }
+            });
+            
+            // 默认自动检测本机IP
+            getCurrentIPInfo();
+            
+            // 批量打开网址功能
+            document.getElementById('openAll').addEventListener('click', function() {
+                const urlsText = document.getElementById('urls').value.trim();
+                if (!urlsText) {
+                    alert('请输入至少一个网址');
+                    return;
+                }
+                
+                const urls = urlsText.split('\n').filter(url => url.trim());
+                
+                if (urls.length === 0) {
+                    alert('没有检测到有效的网址');
+                    return;
+                }
+                
+                // 检查网址数量是否超过30个
+                if (urls.length > 30) {
+                    alert(`最多只能批量打开${urls.length}/30个网址，请减少网址数量`);
+                    return;
+                }
+                
+                // 确认是否真的要打开多个网址
+                if (confirm(`即将打开 ${urls.length} 个网址，确定继续吗？`)) {
+                    urls.forEach(url => {
+                        // 确保网址有协议前缀
+                        let finalUrl = url.trim();
+                        if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+                            finalUrl = 'https://' + finalUrl;
+                        }
+                        
+                        // 在新标签页中打开
+                        window.open(finalUrl, '_blank');
+                    });
+                }
+            });
+            
+            // 清空网址
+            document.getElementById('clear').addEventListener('click', function() {
+                document.getElementById('urls').value = '';
+                document.getElementById('url-results').style.display = 'none';
+                document.getElementById('url-results-container').innerHTML = '';
+            });
+            
+            // 检测网址功能 - 改进版
+            document.getElementById('check-urls').addEventListener('click', async function() {
+                const urlsText = document.getElementById('urls').value.trim();
+                if (!urlsText) {
+                    alert('请输入至少一个网址');
+                    return;
+                }
+                
+                const urls = urlsText.split('\n').filter(url => url.trim());
+                
+                if (urls.length === 0) {
+                    alert('没有检测到有效的网址');
+                    return;
+                }
+                
+                // 显示结果区域
+                const resultsContainer = document.getElementById('url-results-container');
+                resultsContainer.innerHTML = '';
+                document.getElementById('url-results').style.display = 'block';
+                
+                // 检测每个网址
+                for (const url of urls) {
+                    // 确保网址有协议前缀
+                    let finalUrl = url.trim();
+                    if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+                        finalUrl = 'https://' + finalUrl;
+                    }
+                    
+                    // 创建结果项
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'url-result-item';
+                    
+                    const timestamp = formatDateTime(new Date());
+                    
+                    resultItem.innerHTML = `
+                        <div class="url-info">
+                            <a href="${finalUrl}" class="url-link" target="_blank">${finalUrl}</a>
+                            <div class="url-time">检测时间: ${timestamp}</div>
+                            <span class="url-status status-pending">检测中...</span>
+                        </div>
+                        <div class="url-speed">-</div>
+                    `;
+                    resultsContainer.appendChild(resultItem);
+                    
+                    // 检测网址
+                    await checkUrlStatus(finalUrl, resultItem);
+                }
+            });
+            
+            // 改进的网址状态检测函数
+            async function checkUrlStatus(url, resultItem) {
+                const startTime = new Date().getTime();
+                const statusElement = resultItem.querySelector('.url-status');
+                const speedElement = resultItem.querySelector('.url-speed');
+                
+                try {
+                    // 使用fetch API检测网址
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒超时
+                    
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        mode: 'no-cors',
+                        cache: 'no-store',
+                        signal: controller.signal
+                    }).finally(() => clearTimeout(timeoutId));
+                    
+                    const endTime = new Date().getTime();
+                    const duration = endTime - startTime;
+                    
+                    // 检查响应状态
+                    if (response.ok || response.status === 0) { // status 0 可能是CORS问题，但页面可以加载
+                        statusElement.textContent = '可访问 (状态: ' + (response.status || '200') + ')';
+                        statusElement.className = 'url-status status-success';
+                        speedElement.textContent = `响应时间: ${duration}ms`;
+                    } else {
+                        statusElement.textContent = `不可访问 (状态: ${response.status})`;
+                        statusElement.className = 'url-status status-error';
+                        speedElement.textContent = `检测耗时: ${duration}ms`;
+                    }
+                } catch (error) {
+                    const endTime = new Date().getTime();
+                    const duration = endTime - startTime;
+                    
+                    let errorMessage = '不可访问';
+                    if (error.name === 'AbortError') {
+                        errorMessage = '请求超时 (10秒)';
+                    } else if (error.message.includes('Failed to fetch')) {
+                        errorMessage = '网络错误';
+                    } else if (error.message.includes('CORS')) {
+                        errorMessage = '可访问 (CORS限制)';
+                    }
+                    
+                    statusElement.textContent = errorMessage;
+                    statusElement.className = 'url-status status-error';
+                    speedElement.textContent = `检测耗时: ${duration}ms`;
+                }
+            }
+
+            // 网址检测打开功能
+            let urlTestInterval;
+            let currentTestIndex = 0;
+            let urlTestList = [];
+            let urlTestTimeout;
+            let urlTestHistory = [];
+            
+            // 开始检测
+            document.getElementById('url-test-start').addEventListener('click', function() {
+                const urlsText = document.getElementById('url-test-input').value.trim();
+                if (!urlsText) {
+                    alert('请输入至少一个网址');
+                    return;
+                }
+                
+                urlTestList = urlsText.split('\n')
+                    .filter(url => url.trim())
+                    .map(url => {
+                        let finalUrl = url.trim();
+                        if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+                            finalUrl = 'https://' + finalUrl;
+                        }
+                        return finalUrl;
+                    });
+                
+                if (urlTestList.length === 0) {
+                    alert('没有检测到有效的网址');
+                    return;
+                }
+                
+                // 初始化界面
+                document.getElementById('url-test-progress-container').style.display = 'block';
+                document.getElementById('url-test-frame-container').style.display = 'block';
+                document.getElementById('url-test-progress-bar').style.width = '0%';
+                document.getElementById('url-test-progress-bar').textContent = '0%';
+                document.getElementById('url-test-count').textContent = `准备检测 ${urlTestList.length} 个网址`;
+                document.getElementById('url-test-current-url').textContent = '等待开始...';
+                document.getElementById('url-test-status').textContent = '等待中';
+                document.getElementById('url-test-status').className = 'status-pending';
+                document.getElementById('url-test-error').style.display = 'none';
+                document.getElementById('url-test-controls').style.display = 'none';
+                document.getElementById('url-test-view-history').style.display = 'none';
+                
+                // 清空历史记录
+                urlTestHistory = [];
+                currentTestIndex = 0;
+                startNextUrlTest();
+            });
+            
+            // 停止检测
+            document.getElementById('url-test-stop').addEventListener('click', function() {
+                clearTimeout(urlTestTimeout);
+                document.getElementById('url-test-count').textContent = `检测已停止 (已完成 ${currentTestIndex}/${urlTestList.length})`;
+                document.getElementById('url-test-status').textContent = '已停止';
+                document.getElementById('url-test-status').className = 'status-error';
+                
+                if (currentTestIndex > 0) {
+                    document.getElementById('url-test-view-history').style.display = 'block';
+                }
+            });
+            
+            // 清空输入
+            document.getElementById('url-test-clear').addEventListener('click', function() {
+                document.getElementById('url-test-input').value = '';
+                document.getElementById('url-test-progress-container').style.display = 'none';
+                document.getElementById('url-test-frame-container').style.display = 'none';
+                document.getElementById('url-test-history').style.display = 'none';
+                document.getElementById('url-test-view-history').style.display = 'none';
+                clearTimeout(urlTestTimeout);
+            });
+            
+            // 重新加载当前网址
+            document.getElementById('url-test-reload').addEventListener('click', function() {
+                startCurrentUrlTest();
+            });
+            
+            // 下一个网址
+            document.getElementById('url-test-next').addEventListener('click', function() {
+                proceedToNextTest();
+            });
+            
+            // 查看历史记录
+            document.getElementById('url-test-view-history').addEventListener('click', function() {
+                displayTestHistory();
+            });
+            
+            // 关闭历史记录
+            document.getElementById('url-test-close-history').addEventListener('click', function() {
+                document.getElementById('url-test-history').style.display = 'none';
+            });
+            
+            // 开始当前网址测试
+            function startCurrentUrlTest() {
+                if (currentTestIndex >= urlTestList.length) return;
+                
+                const url = urlTestList[currentTestIndex];
+                const progress = Math.round((currentTestIndex / urlTestList.length) * 100);
+                
+                document.getElementById('url-test-progress-bar').style.width = `${progress}%`;
+                document.getElementById('url-test-progress-bar').textContent = `${progress}%`;
+                document.getElementById('url-test-count').textContent = `正在检测: ${currentTestIndex + 1}/${urlTestList.length}`;
+                document.getElementById('url-test-current-url').textContent = url;
+                document.getElementById('url-test-status').textContent = '加载中...';
+                document.getElementById('url-test-status').className = 'status-pending';
+                document.getElementById('url-test-error').style.display = 'none';
+                document.getElementById('url-test-controls').style.display = 'none';
+                
+                // 加载iframe
+                const frame = document.getElementById('url-test-frame');
+                frame.src = url;
+                
+                // 设置加载超时（10秒）
+                urlTestTimeout = setTimeout(() => {
+                    const errorMsg = '加载超时 (10秒)';
+                    document.getElementById('url-test-status').textContent = '加载失败';
+                    document.getElementById('url-test-status').className = 'status-error';
+                    document.getElementById('url-test-error').textContent = errorMsg;
+                    document.getElementById('url-test-error').style.display = 'block';
+                    document.getElementById('url-test-controls').style.display = 'flex';
+                    
+                    // 记录结果
+                    urlTestHistory.push({
+                        url: url,
+                        status: '失败',
+                        message: errorMsg,
+                        timestamp: formatDateTime(new Date())
+                    });
+                    
+                    // 更新进度条
+                    const progress = Math.round(((currentTestIndex + 1) / urlTestList.length) * 100);
+                    document.getElementById('url-test-progress-bar').style.width = `${progress}%`;
+                    document.getElementById('url-test-progress-bar').textContent = `${progress}%`;
+                }, 10000);
+                
+                // 监听iframe加载完成
+                frame.onload = function() {
+                    clearTimeout(urlTestTimeout);
+                    document.getElementById('url-test-status').textContent = '加载成功';
+                    document.getElementById('url-test-status').className = 'status-success';
+                    document.getElementById('url-test-controls').style.display = 'flex';
+                    
+                    // 记录结果
+                    urlTestHistory.push({
+                        url: url,
+                        status: '成功',
+                        message: '页面加载成功',
+                        timestamp: formatDateTime(new Date())
+                    });
+                    
+                    // 更新进度条
+                    const progress = Math.round(((currentTestIndex + 1) / urlTestList.length) * 100);
+                    document.getElementById('url-test-progress-bar').style.width = `${progress}%`;
+                    document.getElementById('url-test-progress-bar').textContent = `${progress}%`;
+                    
+                    // 10秒后继续下一个测试
+                    urlTestTimeout = setTimeout(proceedToNextTest, 10000);
+                };
+                
+                frame.onerror = function() {
+                    clearTimeout(urlTestTimeout);
+                    const errorMsg = '页面加载失败';
+                    document.getElementById('url-test-status').textContent = '加载失败';
+                    document.getElementById('url-test-status').className = 'status-error';
+                    document.getElementById('url-test-error').textContent = errorMsg;
+                    document.getElementById('url-test-error').style.display = 'block';
+                    document.getElementById('url-test-controls').style.display = 'flex';
+                    
+                    // 记录结果
+                    urlTestHistory.push({
+                        url: url,
+                        status: '失败',
+                        message: errorMsg,
+                        timestamp: formatDateTime(new Date())
+                    });
+                    
+                    // 更新进度条
+                    const progress = Math.round(((currentTestIndex + 1) / urlTestList.length) * 100);
+                    document.getElementById('url-test-progress-bar').style.width = `${progress}%`;
+                    document.getElementById('url-test-progress-bar').textContent = `${progress}%`;
+                };
+            }
+            
+            // 开始下一个网址测试
+            function startNextUrlTest() {
+                if (currentTestIndex >= urlTestList.length) {
+                    // 所有测试完成
+                    document.getElementById('url-test-count').textContent = `所有网址检测完成 (共 ${urlTestList.length} 个)`;
+                    document.getElementById('url-test-status').textContent = '已完成';
+                    document.getElementById('url-test-status').className = 'status-success';
+                    document.getElementById('url-test-current-url').textContent = '检测完成';
+                    document.getElementById('url-test-view-history').style.display = 'block';
+                    return;
+                }
+                
+                startCurrentUrlTest();
+            }
+            
+            // 继续下一个测试
+            function proceedToNextTest() {
+                currentTestIndex++;
+                startNextUrlTest();
+            }
+            
+            // 显示测试历史记录
+            function displayTestHistory() {
+                const historyContent = document.getElementById('url-test-history-content');
+                historyContent.innerHTML = '';
+                
+                if (urlTestHistory.length === 0) {
+                    historyContent.innerHTML = '<p>没有检测历史记录</p>';
+                } else {
+                    urlTestHistory.forEach((item, index) => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item';
+                        
+                        const statusClass = item.status === '成功' ? 'status-success' : 'status-error';
+                        
+                        historyItem.innerHTML = `
+                            <div><strong>#${index + 1}</strong> <a href="${item.url}" class="history-url" target="_blank">${item.url}</a></div>
+                            <div>状态: <span class="url-status ${statusClass}">${item.status}</span></div>
+                            <div>时间: ${item.timestamp}</div>
+                            ${item.message ? `<div>信息: ${item.message}</div>` : ''}
+                        `;
+                        
+                        historyContent.appendChild(historyItem);
+                    });
+                }
+                
+                document.getElementById('url-test-history').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
